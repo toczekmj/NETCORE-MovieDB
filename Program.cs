@@ -18,6 +18,7 @@ builder.Services.AddControllersWithViews().AddNewtonsoftJson(options =>
     );
 
 builder.Services.AddTransient<Seed>();
+
 builder.Services.AddScoped<IRepository<Actor>, ActorRepository>();
 builder.Services.AddScoped<IActorService, ActorService>();
 
@@ -25,6 +26,7 @@ builder.Services.AddScoped<IRepository<Movie>, MovieRepository>();
 builder.Services.AddScoped<IMovieService, MovieService>();
 
 builder.Services.AddScoped<IRepository<Rating>, RatingRepository>();
+builder.Services.AddScoped<IRatingService, RatingService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {

@@ -13,20 +13,7 @@ public class RatingRepository : IRepository<Rating>
     {
         _context = context;
     }
-    // public async Task<Rating> CreateNewRating(int movieid)
-    // {
-    //     Rating rating = new Rating()
-    //     {
-    //         Acting = 0,
-    //         Plot = 0,
-    //         Scenography = 0,
-    //         VotesCount = 0,
-    //         MovieId = movieid
-    //     };
-    //     var savedRating = _context.Ratings.Add(rating);
-    //     await _context.SaveChangesAsync();
-    //     return savedRating.Entity;
-    // }
+    
     public async Task<Rating> Create(Rating model)
     {
         var result = _context.Ratings.Add(model);
