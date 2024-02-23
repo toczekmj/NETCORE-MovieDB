@@ -15,7 +15,7 @@ public class Movie
     [Required]
     public string Genre { get; set; }
     [Required]
-    [Range(1000, 3000)]
+    [Range(1000, 2024)]
     public int ProductionYear { get; set; }
 
     public Rating? Rating { get; set; }

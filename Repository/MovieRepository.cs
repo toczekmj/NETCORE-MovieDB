@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using MovieApi.Data;
 using MovieApi.Interfaces;
 using MovieApi.Model;
@@ -16,15 +17,12 @@ public class MovieRepository : IRepository<Movie>
     
     public async Task<Movie> Create(Movie model)
     {
-        _context.Actors.AttachRange(model.Actors!);
-        await _context.SaveChangesAsync();
+        if(!model.Actors.IsNullOrEmpty())
+            _context.Actors.AttachRange(model.Actors!);
         
         var savedMovie = _context.Movies.Add(model);
         await _context.SaveChangesAsync();
         
-        //TODO: add rating to movie
-        
-        await _context.SaveChangesAsync();
         return savedMovie.Entity;
     }
 
