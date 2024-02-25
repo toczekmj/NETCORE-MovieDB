@@ -38,6 +38,12 @@ public class ActorRepository : IRepository<Actor>
         return await _context.Actors.SingleOrDefaultAsync(a => a.ActorId == id);
     }
     
+    public async Task Update(Actor model)
+    {
+        _context.Update(model);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task Update()
     {
         await _context.SaveChangesAsync();
@@ -54,10 +60,11 @@ public class ActorRepository : IRepository<Actor>
         await _context.SaveChangesAsync();
         return result.State;
 
-    }
-
+    } 
+    
     public async Task<EntityState> Delete(Actor model)
     {
         return await Delete(model.ActorId);
     }
+    
 }

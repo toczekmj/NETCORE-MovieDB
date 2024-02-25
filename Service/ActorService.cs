@@ -32,26 +32,11 @@ public class ActorService : IActorService
         existing.firstName = actor.firstName;
         existing.lastName = actor.lastName;
         existing.Movies = actor.Movies;
-        await _actorRepository.Update();
+        await _actorRepository.Update(existing);
 
         return await _actorRepository.RetrieveOrDefault(actor);
     }
-
-    public async Task<Actor?> UpdateActorAsync(Actor actor)
-    {
-        var existingActor = await _actorRepository.RetrieveOrDefault(actor);
-        if (existingActor is null)
-            return null;
-        
-        existingActor.firstName = actor.firstName;
-        existingActor.lastName = actor.lastName;
-        existingActor.Movies = actor.Movies;
-
-        await _actorRepository.Update();
-
-        return await _actorRepository.RetrieveOrDefault(actor);
-    }
-
+    
     public async Task<EntityState> DeleteActorAsync(int id)
     {
         var result = await _actorRepository.Delete(id);

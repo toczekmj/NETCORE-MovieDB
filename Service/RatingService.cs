@@ -24,4 +24,20 @@ public class RatingService : IRatingService
         };
         return rating;
     }
+
+    public async Task<Rating?> GetRatingAsync(int id)
+    {
+        return await _ratingRepository.RetrieveOrDefault(id); 
+    }
+
+    public async Task UpdateRatingAsync(Rating rating)
+    {
+        var currentRating = await _ratingRepository.RetrieveOrDefault(rating);
+        if(currentRating is null) return;
+        currentRating.Acting = rating.Acting;
+        currentRating.Plot = rating.Plot;
+        currentRating.Scenography = rating.Scenography;
+        currentRating.VotesCount = rating.VotesCount;
+        await _ratingRepository.Update(currentRating);
+    }
 }

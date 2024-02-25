@@ -39,6 +39,12 @@ public class RatingRepository : IRepository<Rating>
         return result;
     }
 
+    public async Task Update(Rating model)
+    {
+        _context.Update(model);
+        await _context.SaveChangesAsync();
+    }
+    
     public async Task Update()
     {
         await _context.SaveChangesAsync();

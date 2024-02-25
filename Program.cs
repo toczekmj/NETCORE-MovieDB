@@ -33,6 +33,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")
         );
+    options.EnableSensitiveDataLogging();
 });
 
 
@@ -62,9 +63,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// app.UseHttpsRedirection();
-
-// app.UseExceptionHandler("/Error");
 
 app.UseAuthorization();
 
