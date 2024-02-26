@@ -13,31 +13,37 @@ public class ActorRepository : IRepository<Actor>
     {
         _context = context;
     }
-    
+
     public async Task<Actor> Create(Actor model)
     {
         var result = await _context.Actors.AddAsync(model);
         await _context.SaveChangesAsync();
         return result.Entity;
     }
-    
+
     public async Task<ICollection<Actor>?> RetrieveCollectionOrDefault()
     {
         var actors = _context.Actors;
         if (actors.IsNullOrEmpty()) return null;
         return await actors.ToListAsync();
     }
-    
+
     public async Task<Actor?> RetrieveOrDefault(Actor model)
     {
         return await _context.Actors.SingleOrDefaultAsync(a => a == model);
     }
-    
+
     public async Task<Actor?> RetrieveOrDefault(int id)
     {
         return await _context.Actors.SingleOrDefaultAsync(a => a.ActorId == id);
     }
-    
+
+    public async Task Update(Actor model)
+    {
+        _context.Update(model);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task Update()
     {
         await _context.SaveChangesAsync();
@@ -47,13 +53,12 @@ public class ActorRepository : IRepository<Actor>
     {
         var actor = await RetrieveOrDefault(id);
 
-        if (actor is null) 
+        if (actor is null)
             return EntityState.Unchanged;
-        
+
         var result = _context.Actors.Remove(actor);
         await _context.SaveChangesAsync();
         return result.State;
-
     }
 
     public async Task<EntityState> Delete(Actor model)

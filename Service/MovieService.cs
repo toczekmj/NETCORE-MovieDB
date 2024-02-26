@@ -7,10 +7,16 @@ namespace MovieApi.Service;
 public class MovieService : IMovieService
 {
     private readonly IRepository<Movie> _movieRepository;
+    private readonly IRatingService _ratingService;
+    private readonly IActorService _actorService;
 
-    public MovieService(IRepository<Movie> movieRepository)
+    public MovieService(IRepository<Movie> movieRepository,
+        IRatingService ratingService,
+        IActorService actorService)
     {
         _movieRepository = movieRepository;
+        _ratingService = ratingService;
+        _actorService = actorService;
     }
     
     public async Task<Movie?> GetMovieByIdAsync(int id)
@@ -25,25 +31,43 @@ public class MovieService : IMovieService
 
     public async Task<Movie> AddMovieAsync(Movie movie)
     {
+        if (movie.Rating is null)
+            movie.Rating = _ratingService.CreateNewRating();
+        
         return await _movieRepository.Create(movie);
     }
 
     public async Task<Movie?> UpdateMovieAsync(Movie movie)
     {
-        var existingMovie = await _movieRepository.RetrieveOrDefault(movie);
-        if (existingMovie is null) return null;
+        var currentMovie = await _movieRepository.RetrieveOrDefault(movie);
         
-        
-        //TODO: take a look why it does not work 
-        existingMovie.Title = movie.Title;
-        existingMovie.Director = movie.Director;
-        existingMovie.ProductionYear = movie.ProductionYear;
-        existingMovie.Rating = movie.Rating;
-        existingMovie.Actors = movie.Actors;
-        existingMovie.Genre = movie.Genre;
+        if (currentMovie is null)
+            return null;
+            
+        if (movie.Rating != null) 
+            await _ratingService.UpdateRatingAsync(movie.Rating);
 
+        currentMovie.Actors = new List<Actor?>();
         await _movieRepository.Update();
 
+        if(movie.Actors.Any())
+        {
+            foreach (var actorModel in movie.Actors)
+            {
+                var actor = await _actorService.GetActorByIdAsync(actorModel!.ActorId);
+                currentMovie.Actors.Add(actor);
+                await _movieRepository.Update();
+            }
+        }
+        
+        currentMovie.Title = movie.Title;
+        currentMovie.Director = movie.Director;
+        currentMovie.Genre = movie.Genre;
+        currentMovie.Description = movie.Description;
+        currentMovie.ProductionYear = movie.ProductionYear;
+        currentMovie.PhotoUrl = movie.PhotoUrl;
+        
+        await _movieRepository.Update();
         return await _movieRepository.RetrieveOrDefault(movie);
     }
 

@@ -1,4 +1,8 @@
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.IdentityModel.Tokens;
 using MovieApi.Data;
 using MovieApi.Interfaces;
 using MovieApi.Model;
@@ -16,15 +20,12 @@ public class MovieRepository : IRepository<Movie>
     
     public async Task<Movie> Create(Movie model)
     {
-        _context.Actors.AttachRange(model.Actors!);
-        await _context.SaveChangesAsync();
+        if(!model.Actors.IsNullOrEmpty())
+            _context.Actors.AttachRange(model.Actors!);
         
         var savedMovie = _context.Movies.Add(model);
         await _context.SaveChangesAsync();
         
-        //TODO: add rating to movie
-        
-        await _context.SaveChangesAsync();
         return savedMovie.Entity;
     }
 
@@ -52,6 +53,12 @@ public class MovieRepository : IRepository<Movie>
             .FirstOrDefaultAsync(m => m.MovieId == id);
     }
 
+    public async Task Update(Movie model)
+    {
+        _context.Update(model);
+        await _context.SaveChangesAsync();
+    }
+    
     public async Task Update()
     {
         await _context.SaveChangesAsync();
@@ -62,6 +69,11 @@ public class MovieRepository : IRepository<Movie>
         var movie = await RetrieveOrDefault(id);
         if(movie is null) 
             return EntityState.Unchanged;
+
+        
+        if(movie.Rating is not null)
+            _context.Ratings.Remove(movie.Rating);
+        
         var result = _context.Movies.Remove(movie);
         await _context.SaveChangesAsync();
         return result.State;

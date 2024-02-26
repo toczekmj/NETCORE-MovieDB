@@ -10,6 +10,7 @@ public interface IRepository<T>
     public Task<T?> RetrieveOrDefault(T model);
     public Task<T?> RetrieveOrDefault(int id);
     
+    public Task Update(T model);
     public Task Update();
     
     public Task<EntityState> Delete(int id);
