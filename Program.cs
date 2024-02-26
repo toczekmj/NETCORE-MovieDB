@@ -1,3 +1,5 @@
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using MovieApi;
 using MovieApi.Data;
@@ -7,11 +9,12 @@ using MovieApi.Repository;
 using MovieApi.Service;
 
 var builder = WebApplication.CreateBuilder(args);
-
+var config = builder.Configuration;
 // Add services to the container.
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddHealthChecks()
+    .AddSqlServer(config["ConnectionStrings:DefaultConnection"]);
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllersWithViews().AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
@@ -40,6 +43,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var app = builder.Build();
 
+//Data seeding
 if (args.Length == 1 && args[0].ToLower() == "seeddata")
     SeedData(app);
 
@@ -65,6 +69,11 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseAuthorization();
+
+app.MapHealthChecks("/_health", new HealthCheckOptions()
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 
 app.MapControllers();
 
