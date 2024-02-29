@@ -22,20 +22,20 @@ builder.Services.AddControllersWithViews().AddNewtonsoftJson(options =>
 
 builder.Services.AddTransient<Seed>();
 
-builder.Services.AddScoped<IRepository<Actor>, ActorRepository>();
+builder.Services.AddScoped<IActorRepository, ActorRepository>();
 builder.Services.AddScoped<IActorService, ActorService>();
 
-builder.Services.AddScoped<IRepository<Movie>, MovieRepository>();
+builder.Services.AddScoped<IMovieRepository, MovieRepository>();
 builder.Services.AddScoped<IMovieService, MovieService>();
 
-builder.Services.AddScoped<IRepository<Rating>, RatingRepository>();
+builder.Services.AddScoped<IRatingRepository, RatingRepository>();
 builder.Services.AddScoped<IRatingService, RatingService>();
+var connectionstring = builder.Configuration.GetConnectionString("DefaultConnection");
+
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection")
-        );
+    options.UseSqlServer(connectionstring);
     options.EnableSensitiveDataLogging();
 });
 

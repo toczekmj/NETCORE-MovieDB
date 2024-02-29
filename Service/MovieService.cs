@@ -6,11 +6,11 @@ namespace MovieApi.Service;
 
 public class MovieService : IMovieService
 {
-    private readonly IRepository<Movie> _movieRepository;
+    private readonly IMovieRepository _movieRepository;
     private readonly IRatingService _ratingService;
     private readonly IActorService _actorService;
 
-    public MovieService(IRepository<Movie> movieRepository,
+    public MovieService(IMovieRepository movieRepository,
         IRatingService ratingService,
         IActorService actorService)
     {
@@ -19,7 +19,7 @@ public class MovieService : IMovieService
         _actorService = actorService;
     }
     
-    public async Task<Movie?> GetMovieByIdAsync(int id)
+    public async Task<Movie?> GetMovieByIdAsync(Guid id)
     {
         return await _movieRepository.RetrieveOrDefault(id);
     }
@@ -32,7 +32,7 @@ public class MovieService : IMovieService
     public async Task<Movie> AddMovieAsync(Movie movie)
     {
         if (movie.Rating is null)
-            movie.Rating = _ratingService.CreateNewRating();
+            movie.Rating = _ratingService.CreateEmptyRating();
         
         return await _movieRepository.Create(movie);
     }
@@ -71,7 +71,7 @@ public class MovieService : IMovieService
         return await _movieRepository.RetrieveOrDefault(movie);
     }
 
-    public async Task<EntityState> DeleteMovieAsync(int id)
+    public async Task<EntityState> DeleteMovieAsync(Guid id)
     {
         return await _movieRepository.Delete(id);
     }

@@ -27,9 +27,9 @@ public class MovieController : Controller
         return Ok(movies);
     }
 
-    [HttpGet("{id:int}")]
+    [HttpGet("{id:guid}")]
     [ActionName("GetMovieByIdAsync")]
-    public async Task<ActionResult<Movie>> GetMovieByIdAsync(int id)
+    public async Task<ActionResult<Movie>> GetMovieByIdAsync(Guid id)
     {
         if (!ModelState.IsValid) 
             return BadRequest();
@@ -59,10 +59,10 @@ public class MovieController : Controller
         return CreatedAtAction(nameof(GetMovieByIdAsync), new { id = newMovie.MovieId }, newMovie);
     }
 
-    [HttpDelete("{id:int}")]
+    [HttpDelete("{id:guid}")]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public async Task<ActionResult<Movie>> DeleteMovieAsync(int id)
+    public async Task<ActionResult<Movie>> DeleteMovieAsync(Guid id)
     {
         if (!ModelState.IsValid)
             return BadRequest();

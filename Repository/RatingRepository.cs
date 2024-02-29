@@ -5,7 +5,7 @@ using MovieApi.Model;
 
 namespace MovieApi.Repository;
 
-public class RatingRepository : IRepository<Rating>
+public class RatingRepository : IRatingRepository
 {
     private readonly AppDbContext _context;
 
@@ -20,22 +20,22 @@ public class RatingRepository : IRepository<Rating>
         await _context.SaveChangesAsync();
         return result.Entity;
     }
-
-    public async Task<ICollection<Rating>?> RetrieveCollectionOrDefault()
-    {
-        var result = await _context.Ratings.ToListAsync();
-        return result;
-    }
-
+    
     public async Task<Rating?> RetrieveOrDefault(Rating model)
     {
         var result = await _context.Ratings.SingleOrDefaultAsync(r => r == model);
         return result;
     }
 
-    public async Task<Rating?> RetrieveOrDefault(int id)
+    public async Task<Rating?> RetrieveOrDefault(Guid id)
     {
         var result = await _context.Ratings.SingleOrDefaultAsync(r => r.RatingId == id);
+        return result;
+    }
+
+    public async Task<Rating> RetrieveMovieRatingOrDefault(Guid movieId)
+    {
+        var result = await _context.Ratings.SingleOrDefaultAsync(r => r.MovieId == movieId);
         return result;
     }
 
@@ -44,19 +44,5 @@ public class RatingRepository : IRepository<Rating>
         _context.Update(model);
         await _context.SaveChangesAsync();
     }
-    
-    public async Task Update()
-    {
-        await _context.SaveChangesAsync();
-    }
-
-    public Task<EntityState> Delete(int id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<EntityState> Delete(Rating model)
-    {
-        throw new NotImplementedException();
-    }
 }
+
