@@ -11,7 +11,7 @@ public class RatingService : IRatingService
     {
         _ratingRepository = ratingRepository;
     }
-    
+
     public Rating CreateNewRating()
     {
         var rating = new Rating
@@ -27,17 +27,32 @@ public class RatingService : IRatingService
 
     public async Task<Rating?> GetRatingAsync(int id)
     {
-        return await _ratingRepository.RetrieveOrDefault(id); 
+        return await _ratingRepository.RetrieveOrDefault(id);
     }
 
     public async Task UpdateRatingAsync(Rating rating)
     {
         var currentRating = await _ratingRepository.RetrieveOrDefault(rating);
-        if(currentRating is null) return;
+        if (currentRating is null) return;
         currentRating.Acting = rating.Acting;
         currentRating.Plot = rating.Plot;
         currentRating.Scenography = rating.Scenography;
         currentRating.VotesCount = rating.VotesCount;
         await _ratingRepository.Update(currentRating);
+    }
+
+    public async Task<Rating?> Vote(Rating rating)
+    {
+        var currentRating = await _ratingRepository.RetrieveOrDefault(rating);
+        if (currentRating is null)
+            return null;
+
+        currentRating.VotesCount++;
+        currentRating.Scenography += rating.Scenography;
+        currentRating.Acting += rating.Acting;
+        currentRating.Plot += rating.Plot;
+        await _ratingRepository.Update(currentRating);
+
+        return await _ratingRepository.RetrieveOrDefault(rating);
     }
 }
