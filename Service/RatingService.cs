@@ -46,6 +46,13 @@ public class RatingService : IRatingService
         var currentRating = await _ratingRepository.RetrieveOrDefault(rating);
         if (currentRating is null)
             return null;
+        if (rating is
+            {
+                Acting: > 5 or < 0,
+                Scenography: > 5 or < 0,
+                Plot: > 5 or < 0
+            })
+            return null;
 
         currentRating.VotesCount++;
         currentRating.Scenography += rating.Scenography;

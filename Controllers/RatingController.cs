@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using MovieApi.Interfaces;
 using MovieApi.Model;
@@ -16,11 +17,24 @@ public class RatingController : Controller
     }
 
     [HttpPut]
-    public async Task<ActionResult<Rating>> RateMovie([FromBody] Rating? rating)
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.NotModified)]
+    public async Task<IActionResult> RateMovie([FromBody] Rating? rating)
     {
         if (!ModelState.IsValid || rating is null)
             return BadRequest();
         var updatedRating = await _ratingService.Vote(rating);
-        return Ok(updatedRating);
+        return updatedRating is null ? StatusCode((int)HttpStatusCode.InternalServerError) : Ok(updatedRating);
+    }
+
+    [HttpGet("{movieId:int}")]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    public async Task<ActionResult<Rating?>> GetRating(int? movieId)
+    {
+        if (!ModelState.IsValid || movieId is null)
+            return BadRequest();
+        var rating = await _ratingService.GetRatingAsync((int)movieId);
+        return rating is null ? NotFound() : Ok(rating);
     }
 }
