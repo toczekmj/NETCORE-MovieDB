@@ -6,7 +6,7 @@ using MovieApi.Model;
 
 namespace MovieApi.Repository;
 
-public class MovieRepository : IRepository<Movie>
+public class MovieRepository : IMovieRepository
 {
     private readonly AppDbContext _context;
 
@@ -42,7 +42,7 @@ public class MovieRepository : IRepository<Movie>
             .FirstOrDefaultAsync(m => m.MovieId == model.MovieId);
     }
 
-    public async Task<Movie?> RetrieveOrDefault(int id)
+    public async Task<Movie?> RetrieveOrDefault(Guid id)
     {
         return await _context.Movies
             .Include(x => x.Actors)
@@ -50,18 +50,12 @@ public class MovieRepository : IRepository<Movie>
             .FirstOrDefaultAsync(m => m.MovieId == id);
     }
 
-    public async Task Update(Movie model)
-    {
-        _context.Update(model);
-        await _context.SaveChangesAsync();
-    }
-
     public async Task Update()
     {
         await _context.SaveChangesAsync();
     }
 
-    public async Task<EntityState> Delete(int id)
+    public async Task<EntityState> Delete(Guid id)
     {
         var movie = await RetrieveOrDefault(id);
         if (movie is null)
@@ -74,10 +68,5 @@ public class MovieRepository : IRepository<Movie>
         var result = _context.Movies.Remove(movie);
         await _context.SaveChangesAsync();
         return result.State;
-    }
-
-    public async Task<EntityState> Delete(Movie model)
-    {
-        return await Delete(model.MovieId);
     }
 }

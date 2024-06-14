@@ -5,14 +5,14 @@ namespace MovieApi.Service;
 
 public class RatingService : IRatingService
 {
-    private readonly IRepository<Rating> _ratingRepository;
+    private readonly IRatingRepository _ratingRepository;
 
-    public RatingService(IRepository<Rating> ratingRepository)
+    public RatingService(IRatingRepository ratingRepository)
     {
         _ratingRepository = ratingRepository;
     }
 
-    public Rating CreateNewRating()
+    public Rating CreateEmptyRating()
     {
         var rating = new Rating
         {
@@ -25,9 +25,14 @@ public class RatingService : IRatingService
         return rating;
     }
 
-    public async Task<Rating?> GetRatingAsync(int id)
+    public async Task<Rating?> GetRatingAsync(Guid id)
     {
         return await _ratingRepository.RetrieveOrDefault(id);
+    }
+
+    public async Task<Rating?> GetMovieRatingAsync(Guid movieId)
+    {
+        return await _ratingRepository.RetrieveMovieRatingOrDefault(movieId);
     }
 
     public async Task UpdateRatingAsync(Rating rating)

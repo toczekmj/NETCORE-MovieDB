@@ -36,6 +36,7 @@ public class Seed
                 var movies = new List<Movie>();
                 actors.Add(new Actor()
                 {
+                    ActorId = Guid.NewGuid(),
                     Movies = movies,
                     firstName = faker.Name.FirstName(),
                     lastName = faker.Name.LastName(),

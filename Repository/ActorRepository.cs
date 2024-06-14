@@ -6,7 +6,7 @@ using MovieApi.Model;
 
 namespace MovieApi.Repository;
 
-public class ActorRepository : IRepository<Actor>
+public class ActorRepository : IActorRepository
 {
     private readonly AppDbContext _context;
     public ActorRepository(AppDbContext context)
@@ -33,7 +33,7 @@ public class ActorRepository : IRepository<Actor>
         return await _context.Actors.SingleOrDefaultAsync(a => a == model);
     }
 
-    public async Task<Actor?> RetrieveOrDefault(int id)
+    public async Task<Actor?> RetrieveOrDefault(Guid id)
     {
         return await _context.Actors.SingleOrDefaultAsync(a => a.ActorId == id);
     }
@@ -43,13 +43,8 @@ public class ActorRepository : IRepository<Actor>
         _context.Update(model);
         await _context.SaveChangesAsync();
     }
-
-    public async Task Update()
-    {
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task<EntityState> Delete(int id)
+    
+    public async Task<EntityState> Delete(Guid id)
     {
         var actor = await RetrieveOrDefault(id);
 
@@ -59,10 +54,5 @@ public class ActorRepository : IRepository<Actor>
         var result = _context.Actors.Remove(actor);
         await _context.SaveChangesAsync();
         return result.State;
-    }
-
-    public async Task<EntityState> Delete(Actor model)
-    {
-        return await Delete(model.ActorId);
     }
 }

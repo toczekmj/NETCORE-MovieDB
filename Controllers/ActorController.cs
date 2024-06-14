@@ -28,8 +28,8 @@ public class ActorController : ControllerBase
         return Ok(actors);
     }
 
-    [HttpGet("{id:int}")]
-    public async Task<ActionResult<Actor>> GetActor(int id)
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<Actor>> GetActor(Guid id)
     {
         if (!ModelState.IsValid) 
             return BadRequest();
@@ -50,10 +50,10 @@ public class ActorController : ControllerBase
         return CreatedAtAction(nameof(GetActor), new { id = newActor.ActorId }, newActor);
     }
 
-    [HttpDelete("{id:int}")]
+    [HttpDelete("{id:guid}")]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public async Task<ActionResult<EntityState>> DeleteActorAsync(int id)
+    public async Task<ActionResult<EntityState>> DeleteActorAsync(Guid id)
     {
         if (!ModelState.IsValid)
             return BadRequest();

@@ -4,8 +4,9 @@ namespace MovieApi.Interfaces;
 
 public interface IRatingService
 {
-    public Rating CreateNewRating();
+    public Rating CreateEmptyRating();
     public Task UpdateRatingAsync(Rating rating);
     public Task<Rating?> Vote(Rating rating);
-    public Task<Rating?> GetRatingAsync(int id);
+    public Task<Rating?> GetRatingAsync(Guid id);
+    public Task<Rating?> GetMovieRatingAsync(Guid movieId);
 }

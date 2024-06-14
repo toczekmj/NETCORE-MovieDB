@@ -6,14 +6,14 @@ namespace MovieApi.Service;
 
 public class ActorService : IActorService
 {
-    private readonly IRepository<Actor> _actorRepository;
+    private readonly IActorRepository _actorRepository;
 
-    public ActorService(IRepository<Actor> actorRepository)
+    public ActorService(IActorRepository actorRepository)
     {
         _actorRepository = actorRepository;
     }
     
-    public async Task<Actor?> GetActorByIdAsync(int id)
+    public async Task<Actor?> GetActorByIdAsync(Guid id)
     {
         return await _actorRepository.RetrieveOrDefault(id);
     }
@@ -37,7 +37,7 @@ public class ActorService : IActorService
         return await _actorRepository.RetrieveOrDefault(actor);
     }
     
-    public async Task<EntityState> DeleteActorAsync(int id)
+    public async Task<EntityState> DeleteActorAsync(Guid id)
     {
         var result = await _actorRepository.Delete(id);
         return result;
