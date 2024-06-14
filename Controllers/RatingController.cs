@@ -16,6 +16,7 @@ public class RatingController : Controller
         _ratingService = ratingService;
     }
 
+    //TODO: rename this to has more appropriate name e.g. Vote or sth 
     [HttpPut]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     [ProducesResponseType((int)HttpStatusCode.NotModified)]

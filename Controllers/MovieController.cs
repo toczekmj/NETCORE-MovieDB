@@ -1,7 +1,8 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MovieApi.Interfaces;
-using MovieApi.Model;
+using MovieApi.Model.DTOs;
 
 namespace MovieApi.Controllers;
 
@@ -17,9 +18,9 @@ public class MovieController : Controller
     }
 
     [HttpGet]
-    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<Movie>))]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(IEnumerable<MovieDto>))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public async Task<ActionResult<IEnumerable<Movie>>> GetAllMoviesAsync()
+    public async Task<ActionResult<IEnumerable<MovieDto?>>> GetAllMoviesAsync()
     {
         if (!ModelState.IsValid)
             return BadRequest();
@@ -29,7 +30,10 @@ public class MovieController : Controller
 
     [HttpGet("{id:guid}")]
     [ActionName("GetMovieByIdAsync")]
-    public async Task<ActionResult<Movie>> GetMovieByIdAsync(Guid id)
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(MovieDto))]
+    public async Task<ActionResult<MovieDto?>> GetMovieByIdAsync(Guid id)
     {
         if (!ModelState.IsValid) 
             return BadRequest();
@@ -40,18 +44,18 @@ public class MovieController : Controller
     }
     
     [HttpPut]
-    [ProducesResponseType((int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.Created, Type = typeof(UpdateMovieDto))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public async Task<ActionResult<Movie>> UpdateMovie([FromBody] Movie movie)
+    public async Task<ActionResult<MovieDto?>> UpdateMovie(Guid id, [FromBody] UpdateMovieDto movie)
     {
-        var result = await _movieService.UpdateMovieAsync(movie);
+        var result = await _movieService.UpdateMovieAsync(id, movie);
         return Ok(result);
     }
     
     [HttpPost]
-    [ProducesResponseType((int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.Created, Type = typeof(CreateMovieDto))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public async Task<ActionResult<Movie>> CreateMovieAsync([FromBody] Movie? movie)
+    public async Task<ActionResult<MovieDto?>> CreateMovieAsync([FromBody] CreateMovieDto? movie)
     {
         if (!ModelState.IsValid || movie is null)
             return BadRequest();
@@ -60,9 +64,9 @@ public class MovieController : Controller
     }
 
     [HttpDelete("{id:guid}")]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(EntityState))]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public async Task<ActionResult<Movie>> DeleteMovieAsync(Guid id)
+    public async Task<ActionResult<EntityState>> DeleteMovieAsync(Guid id)
     {
         if (!ModelState.IsValid)
             return BadRequest();

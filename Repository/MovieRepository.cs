@@ -15,7 +15,7 @@ public class MovieRepository : IMovieRepository
         _context = context;
     }
 
-    public async Task<Movie> Create(Movie model)
+    public async Task<Movie> CreateAsync(Movie model)
     {
         if (!model.Actors.IsNullOrEmpty())
             _context.Actors.AttachRange(model.Actors!);
@@ -26,7 +26,7 @@ public class MovieRepository : IMovieRepository
         return savedMovie.Entity;
     }
 
-    public async Task<ICollection<Movie>?> RetrieveCollectionOrDefault()
+    public async Task<ICollection<Movie>?> RetrieveCollectionOrDefaultAsync()
     {
         return await _context.Movies
             .Include(x => x.Actors)
@@ -34,15 +34,7 @@ public class MovieRepository : IMovieRepository
             .ToListAsync();
     }
 
-    public async Task<Movie?> RetrieveOrDefault(Movie model)
-    {
-        return await _context.Movies
-            .Include(x => x.Actors)
-            .Include(x => x.Rating)
-            .FirstOrDefaultAsync(m => m.MovieId == model.MovieId);
-    }
-
-    public async Task<Movie?> RetrieveOrDefault(Guid id)
+    public async Task<Movie?> RetrieveOrDefaultAsync(Guid id)
     {
         return await _context.Movies
             .Include(x => x.Actors)
@@ -50,14 +42,14 @@ public class MovieRepository : IMovieRepository
             .FirstOrDefaultAsync(m => m.MovieId == id);
     }
 
-    public async Task Update()
+    public async Task UpdateAsync()
     {
         await _context.SaveChangesAsync();
     }
 
-    public async Task<EntityState> Delete(Guid id)
+    public async Task<EntityState> DeleteAsync(Guid id)
     {
-        var movie = await RetrieveOrDefault(id);
+        var movie = await RetrieveOrDefaultAsync(id);
         if (movie is null)
             return EntityState.Unchanged;
 

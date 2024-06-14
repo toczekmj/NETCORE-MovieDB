@@ -27,28 +27,17 @@ public class RatingService : IRatingService
 
     public async Task<Rating?> GetRatingAsync(Guid id)
     {
-        return await _ratingRepository.RetrieveOrDefault(id);
+        return await _ratingRepository.RetrieveOrDefaultAsync(id);
     }
 
     public async Task<Rating?> GetMovieRatingAsync(Guid movieId)
     {
-        return await _ratingRepository.RetrieveMovieRatingOrDefault(movieId);
-    }
-
-    public async Task UpdateRatingAsync(Rating rating)
-    {
-        var currentRating = await _ratingRepository.RetrieveOrDefault(rating);
-        if (currentRating is null) return;
-        currentRating.Acting = rating.Acting;
-        currentRating.Plot = rating.Plot;
-        currentRating.Scenography = rating.Scenography;
-        currentRating.VotesCount = rating.VotesCount;
-        await _ratingRepository.Update(currentRating);
+        return await _ratingRepository.RetrieveMovieRatingOrDefaultAsync(movieId);
     }
 
     public async Task<Rating?> Vote(Rating rating)
     {
-        var currentRating = await _ratingRepository.RetrieveOrDefault(rating);
+        var currentRating = await _ratingRepository.RetrieveOrDefaultAsync(rating.RatingId);
         if (currentRating is null)
             return null;
         if (rating is
@@ -63,8 +52,8 @@ public class RatingService : IRatingService
         currentRating.Scenography += rating.Scenography;
         currentRating.Acting += rating.Acting;
         currentRating.Plot += rating.Plot;
-        await _ratingRepository.Update(currentRating);
+        await _ratingRepository.UpdateAsync(currentRating);
 
-        return await _ratingRepository.RetrieveOrDefault(rating);
+        return await _ratingRepository.RetrieveOrDefaultAsync(rating.RatingId);
     }
 }
