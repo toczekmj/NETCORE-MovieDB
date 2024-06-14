@@ -28,7 +28,6 @@ public static class MovieMapper
             movie.Description, 
             movie.Genre, 
             movie.ProductionYear, 
-            movie.Rating, 
             movie.Actors, 
             movie.PhotoUrl
         );

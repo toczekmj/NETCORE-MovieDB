@@ -42,7 +42,6 @@ public class MovieService : IMovieService
             Director = movieDto.Director,
             Genre = movieDto.Genre,
             ProductionYear = movieDto.ProductionYear,
-            Rating = movieDto.Rating,
             Actors = movieDto.Actors,
             PhotoUrl = movieDto.PhotoUrl
         };
