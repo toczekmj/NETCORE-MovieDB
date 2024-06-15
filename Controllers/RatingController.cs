@@ -1,7 +1,7 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using MovieApi.Interfaces;
-using MovieApi.Model;
+using MovieApi.Model.DTOs;
 
 namespace MovieApi.Controllers;
 
@@ -10,28 +10,32 @@ namespace MovieApi.Controllers;
 public class RatingController : Controller
 {
     private readonly IRatingService _ratingService;
+    private readonly IMovieService _movieService;
 
-    public RatingController(IRatingService ratingService)
+    public RatingController(IRatingService ratingService, IMovieService movieService)
     {
         _ratingService = ratingService;
+        _movieService = movieService;
     }
 
-    //TODO: rename this to has more appropriate name e.g. Vote or sth 
-    [HttpPut]
+    [HttpPut("{movieId:guid}")]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     [ProducesResponseType((int)HttpStatusCode.NotModified)]
-    public async Task<IActionResult> RateMovie([FromBody] Rating? rating)
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(UpdateRatingDto))]
+    public async Task<ActionResult<RatingDto>> VoteByMovieId(Guid movieId, [FromBody] UpdateRatingDto? ratingDto)
     {
-        if (!ModelState.IsValid || rating is null)
+        if (!ModelState.IsValid)
             return BadRequest();
-        var updatedRating = await _ratingService.Vote(rating);
-        return updatedRating is null ? StatusCode((int)HttpStatusCode.InternalServerError) : Ok(updatedRating);
+        var movie = await _movieService.GetMovieByIdAsync(movieId);
+        if (movie is null) return StatusCode((int)HttpStatusCode.InternalServerError); 
+        var updatedRating = await _ratingService.Vote(movie.Rating.RatingId, ratingDto);
+            return updatedRating is null ? StatusCode((int)HttpStatusCode.InternalServerError) : Ok(updatedRating);
     }
     
     [HttpGet("{ratingId:guid}")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
-    public async Task<ActionResult<Rating?>> GetRating(Guid? ratingId)
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RatingDto))]
+    public async Task<ActionResult<RatingDto?>> GetRating(Guid? ratingId)
     {
         if (!ModelState.IsValid || ratingId is null)
             return BadRequest();
@@ -41,8 +45,8 @@ public class RatingController : Controller
     
     [HttpGet("/api/v1/[controller]/byMovieId/{movieId:guid}")]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
-    public async Task<ActionResult<Rating?>> GetMovieRating(Guid? movieId)
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(RatingDto))]
+    public async Task<ActionResult<RatingDto?>> GetMovieRating(Guid? movieId)
     {
         if (!ModelState.IsValid || movieId is null)
             return BadRequest();
