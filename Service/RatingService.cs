@@ -1,5 +1,7 @@
 using MovieApi.Interfaces;
+using MovieApi.Mappers;
 using MovieApi.Model;
+using MovieApi.Model.DTOs;
 
 namespace MovieApi.Service;
 
@@ -25,46 +27,40 @@ public class RatingService : IRatingService
         return rating;
     }
 
-    public async Task<Rating?> GetRatingAsync(Guid id)
+    
+
+    public async Task<RatingDto?> GetRatingAsync(Guid id)
     {
-        return await _ratingRepository.RetrieveOrDefault(id);
+        var rating = await _ratingRepository.RetrieveOrDefaultAsync(id);
+        return rating.ToRatingDto();
     }
 
-    public async Task<Rating?> GetMovieRatingAsync(Guid movieId)
+    public async Task<RatingDto?> GetMovieRatingAsync(Guid movieId)
     {
-        return await _ratingRepository.RetrieveMovieRatingOrDefault(movieId);
+        var rating = await _ratingRepository.RetrieveMovieRatingOrDefaultAsync(movieId);
+        return rating.ToRatingDto();
     }
-
-    public async Task UpdateRatingAsync(Rating rating)
+    
+    public async Task<RatingDto?> Vote(Guid ratingId, UpdateRatingDto ratingDto)
     {
-        var currentRating = await _ratingRepository.RetrieveOrDefault(rating);
-        if (currentRating is null) return;
-        currentRating.Acting = rating.Acting;
-        currentRating.Plot = rating.Plot;
-        currentRating.Scenography = rating.Scenography;
-        currentRating.VotesCount = rating.VotesCount;
-        await _ratingRepository.Update(currentRating);
-    }
-
-    public async Task<Rating?> Vote(Rating rating)
-    {
-        var currentRating = await _ratingRepository.RetrieveOrDefault(rating);
-        if (currentRating is null)
-            return null;
-        if (rating is
+        var currentRating = await _ratingRepository.RetrieveOrDefaultAsync(ratingId);
+        
+        if (currentRating is null) return null;
+        if (ratingDto is
             {
-                Acting: > 5 or < 0,
-                Scenography: > 5 or < 0,
-                Plot: > 5 or < 0
-            })
-            return null;
-
+                Acting: < 0 or > 5,
+                Plot: < 0 or > 5,
+                Scenography: < 0 or > 5,
+            }) return null;
+        
         currentRating.VotesCount++;
-        currentRating.Scenography += rating.Scenography;
-        currentRating.Acting += rating.Acting;
-        currentRating.Plot += rating.Plot;
-        await _ratingRepository.Update(currentRating);
-
-        return await _ratingRepository.RetrieveOrDefault(rating);
+        currentRating.Plot += ratingDto.Plot;
+        currentRating.Acting += ratingDto.Acting;
+        currentRating.Scenography += ratingDto.Scenography;
+        
+        await _ratingRepository.UpdateAsync(currentRating);
+        
+        var output = await _ratingRepository.RetrieveOrDefaultAsync(ratingId);
+        return output.ToRatingDto();
     }
 }
