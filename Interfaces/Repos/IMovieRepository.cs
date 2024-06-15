@@ -5,12 +5,9 @@ namespace MovieApi.Interfaces;
 
 public interface IMovieRepository
 {
-    public Task<Movie> Create(Movie model);
-    public Task<ICollection<Movie>?> RetrieveCollectionOrDefault();
-    
-    public Task<Movie?> RetrieveOrDefault(Movie model);
-    public Task<Movie?> RetrieveOrDefault(Guid id);
-    public Task Update();
-    
-    public Task<EntityState> Delete(Guid id);
+    public Task<Movie> CreateAsync(Movie model);
+    public Task<ICollection<Movie>?> RetrieveCollectionOrDefaultAsync();
+    public Task<Movie?> RetrieveOrDefaultAsync(Guid id);
+    public Task UpdateAsync();
+    public Task<EntityState> DeleteAsync(Guid id);
 }

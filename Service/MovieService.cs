@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using MovieApi.Interfaces;
+using MovieApi.Mappers;
 using MovieApi.Model;
+using MovieApi.Model.DTOs;
 
 namespace MovieApi.Service;
 
@@ -19,36 +21,46 @@ public class MovieService : IMovieService
         _actorService = actorService;
     }
     
-    public async Task<Movie?> GetMovieByIdAsync(Guid id)
+    public async Task<MovieDto?> GetMovieByIdAsync(Guid id)
     {
-        return await _movieRepository.RetrieveOrDefault(id);
+        var movie = await _movieRepository.RetrieveOrDefaultAsync(id);
+        return movie?.ToMovieDto();
     }
 
-    public async Task<ICollection<Movie>?> GetMoviesAsync()
+    public async Task<IEnumerable<MovieDto>?> GetMoviesAsync()
     {
-        return await _movieRepository.RetrieveCollectionOrDefault();
+        var movies = await _movieRepository.RetrieveCollectionOrDefaultAsync();
+        return movies.Select(m => m.ToMovieDto());
     }
 
-    public async Task<Movie> AddMovieAsync(Movie movie)
+    public async Task<MovieDto> AddMovieAsync(CreateMovieDto movieDto)
     {
-        if (movie.Rating is null)
-            movie.Rating = _ratingService.CreateEmptyRating();
+        var movie = new Movie()
+        {
+            Title = movieDto.Title,
+            Description = movieDto.Description,
+            Director = movieDto.Director,
+            Genre = movieDto.Genre,
+            ProductionYear = movieDto.ProductionYear,
+            Actors = movieDto.Actors,
+            PhotoUrl = movieDto.PhotoUrl
+        };
         
-        return await _movieRepository.Create(movie);
+        movie.Rating ??= _ratingService.CreateEmptyRating();
+        
+        var created = await _movieRepository.CreateAsync(movie);
+        return created.ToMovieDto();
     }
-
-    public async Task<Movie?> UpdateMovieAsync(Movie movie)
+    
+    public async Task<MovieDto?> UpdateMovieAsync(Guid id, UpdateMovieDto movie)
     {
-        var currentMovie = await _movieRepository.RetrieveOrDefault(movie);
+        var currentMovie = await _movieRepository.RetrieveOrDefaultAsync(id);
         
         if (currentMovie is null)
             return null;
-            
-        if (movie.Rating != null) 
-            await _ratingService.UpdateRatingAsync(movie.Rating);
 
         currentMovie.Actors = new List<Actor?>();
-        await _movieRepository.Update();
+        await _movieRepository.UpdateAsync();
 
         if(movie.Actors.Any())
         {
@@ -56,7 +68,7 @@ public class MovieService : IMovieService
             {
                 var actor = await _actorService.GetActorByIdAsync(actorModel!.ActorId);
                 currentMovie.Actors.Add(actor);
-                await _movieRepository.Update();
+                await _movieRepository.UpdateAsync();
             }
         }
         
@@ -67,12 +79,13 @@ public class MovieService : IMovieService
         currentMovie.ProductionYear = movie.ProductionYear;
         currentMovie.PhotoUrl = movie.PhotoUrl;
         
-        await _movieRepository.Update();
-        return await _movieRepository.RetrieveOrDefault(movie);
+        await _movieRepository.UpdateAsync();
+        var updated = await _movieRepository.RetrieveOrDefaultAsync(id);
+        return updated?.ToMovieDto();
     }
 
     public async Task<EntityState> DeleteMovieAsync(Guid id)
     {
-        return await _movieRepository.Delete(id);
+        return await _movieRepository.DeleteAsync(id);
     }
 }

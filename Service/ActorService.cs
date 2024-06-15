@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using MovieApi.Interfaces;
+using MovieApi.Mappers;
 using MovieApi.Model;
+using MovieApi.Model.DTOs;
 
 namespace MovieApi.Service;
 
@@ -13,33 +15,64 @@ public class ActorService : IActorService
         _actorRepository = actorRepository;
     }
     
+    public async Task<ActorDto?> GetActorDtoByIdAsync(Guid id)
+    {
+        var actor = await _actorRepository.RetrieveOrDefaultAsync(id);
+        return actor?.ToActorDto();
+    }
+    
     public async Task<Actor?> GetActorByIdAsync(Guid id)
     {
-        return await _actorRepository.RetrieveOrDefault(id);
+        var actor = await _actorRepository.RetrieveOrDefaultAsync(id);
+        return actor;
     }
 
-    public async Task<ICollection<Actor>?> GetActorsAsync()
+    public async Task<IEnumerable<ActorDto>?> GetActorsAsync()
     {
-        return await _actorRepository.RetrieveCollectionOrDefault();
+        var actors = await _actorRepository.RetrieveCollectionOrDefaultAsync();
+        return actors.Select(a => a.ToActorDto());
     }
 
-    public async Task<Actor?> SaveActorAsync(Actor actor)
+    public async Task<ActorDto?> SaveActorAsync(CreateActorDto actorDto)
     {
-        var existing = await _actorRepository.RetrieveOrDefault(actor);
-        if(existing is null)
-            return await _actorRepository.Create(actor);
+        var actor = new Actor()
+        {
+            firstName = actorDto.firstName,
+            lastName = actorDto.lastName,
+        };
+
+        var created = await _actorRepository.CreateAsync(actor);
+        return created.ToActorDto();
         
-        existing.firstName = actor.firstName;
-        existing.lastName = actor.lastName;
-        existing.Movies = actor.Movies;
-        await _actorRepository.Update(existing);
-
-        return await _actorRepository.RetrieveOrDefault(actor);
+        // var existing = await _actorRepository.RetrieveOrDefault(actor);
+        // if(existing is null)
+        //     return await _actorRepository.Create(actor);
+        //
+        // existing.firstName = actorDto.firstName;
+        // existing.lastName = actorDto.lastName;
+        // existing.Movies = actorDto.Movies;
+        // await _actorRepository.Update(existing);
+        //
+        // return await _actorRepository.RetrieveOrDefault(actorDto);
     }
     
     public async Task<EntityState> DeleteActorAsync(Guid id)
     {
         var result = await _actorRepository.Delete(id);
         return result;
+    }
+
+    public async Task<ActorDto?> UpdateActorAsync(Guid id, UpdateActorDto actor)
+    {
+        var result = await _actorRepository.RetrieveOrDefaultAsync(id);
+        if (result is null) return null;
+        
+        result.firstName = actor.firstName;
+        result.lastName = actor.lastName;
+        
+        await _actorRepository.Update(result);
+        
+        var output = await _actorRepository.RetrieveOrDefaultAsync(id);
+        return output.ToActorDto();
     }
 }

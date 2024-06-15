@@ -14,26 +14,21 @@ public class ActorRepository : IActorRepository
         _context = context;
     }
 
-    public async Task<Actor> Create(Actor model)
+    public async Task<Actor> CreateAsync(Actor model)
     {
         var result = await _context.Actors.AddAsync(model);
         await _context.SaveChangesAsync();
         return result.Entity;
     }
 
-    public async Task<ICollection<Actor>?> RetrieveCollectionOrDefault()
+    public async Task<ICollection<Actor>?> RetrieveCollectionOrDefaultAsync()
     {
         var actors = _context.Actors;
         if (actors.IsNullOrEmpty()) return null;
         return await actors.ToListAsync();
     }
 
-    public async Task<Actor?> RetrieveOrDefault(Actor model)
-    {
-        return await _context.Actors.SingleOrDefaultAsync(a => a == model);
-    }
-
-    public async Task<Actor?> RetrieveOrDefault(Guid id)
+    public async Task<Actor?> RetrieveOrDefaultAsync(Guid id)
     {
         return await _context.Actors.SingleOrDefaultAsync(a => a.ActorId == id);
     }
@@ -46,7 +41,7 @@ public class ActorRepository : IActorRepository
     
     public async Task<EntityState> Delete(Guid id)
     {
-        var actor = await RetrieveOrDefault(id);
+        var actor = await RetrieveOrDefaultAsync(id);
 
         if (actor is null)
             return EntityState.Unchanged;
