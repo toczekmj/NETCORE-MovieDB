@@ -4,9 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using MovieApi;
 using MovieApi.Data;
 using MovieApi.Interfaces;
-using MovieApi.Model;
+using MovieApi.Interfaces.Services;
 using MovieApi.Repository;
 using MovieApi.Service;
+using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -17,7 +18,7 @@ builder.Services.AddHealthChecks()
     .AddSqlServer(config["ConnectionStrings:DefaultConnection"]);
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllersWithViews().AddNewtonsoftJson(options =>
-    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore
     );
 
 builder.Services.AddTransient<Seed>();
@@ -30,6 +31,10 @@ builder.Services.AddScoped<IMovieService, MovieService>();
 
 builder.Services.AddScoped<IRatingRepository, RatingRepository>();
 builder.Services.AddScoped<IRatingService, RatingService>();
+
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<ICommentService, CommentService>();
+
 var connectionstring = builder.Configuration.GetConnectionString("DefaultConnection");
 
 

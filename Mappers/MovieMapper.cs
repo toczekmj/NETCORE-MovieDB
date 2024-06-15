@@ -16,6 +16,7 @@ public static class MovieMapper
             movie.ProductionYear, 
             movie.Rating, 
             movie.Actors, 
+            movie.Comments,
             movie.PhotoUrl
             );
     }
@@ -29,6 +30,7 @@ public static class MovieMapper
             movie.Genre, 
             movie.ProductionYear, 
             movie.Actors, 
+            movie.Comments,
             movie.PhotoUrl
         );
     }

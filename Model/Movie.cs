@@ -17,9 +17,8 @@ public class Movie
     [Required]
     [Range(1000, 2024)]
     public int ProductionYear { get; set; }
-
     public Rating? Rating { get; set; }
     public ICollection<Actor?> Actors { get; set; }
-
     public string PhotoUrl { get; set; }
+    public ICollection<Comment?>? Comments { get; set; }
 }

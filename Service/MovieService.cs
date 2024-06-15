@@ -43,10 +43,12 @@ public class MovieService : IMovieService
             Genre = movieDto.Genre,
             ProductionYear = movieDto.ProductionYear,
             Actors = movieDto.Actors,
+            Comments = movieDto.Comments,
             PhotoUrl = movieDto.PhotoUrl
         };
         
         movie.Rating ??= _ratingService.CreateEmptyRating();
+        movie.Comments ??= new List<Comment?>();
         
         var created = await _movieRepository.CreateAsync(movie);
         return created.ToMovieDto();

@@ -19,6 +19,9 @@ public class MovieRepository : IMovieRepository
     {
         if (!model.Actors.IsNullOrEmpty())
             _context.Actors.AttachRange(model.Actors!);
+        
+        if(!model.Comments.IsNullOrEmpty())
+            _context.Comments.AttachRange(model.Comments!);
 
         var savedMovie = _context.Movies.Add(model);
         await _context.SaveChangesAsync();
@@ -31,6 +34,7 @@ public class MovieRepository : IMovieRepository
         return await _context.Movies
             .Include(x => x.Actors)
             .Include(x => x.Rating)
+            .Include(x => x.Comments)
             .ToListAsync();
     }
 
@@ -39,6 +43,7 @@ public class MovieRepository : IMovieRepository
         return await _context.Movies
             .Include(x => x.Actors)
             .Include(x => x.Rating)
+            .Include(x => x.Comments)
             .FirstOrDefaultAsync(m => m.MovieId == id);
     }
 
