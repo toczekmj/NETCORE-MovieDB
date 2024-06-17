@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using MovieApi;
 using MovieApi.Data;
+using MovieApi.Filters.Helpers;
 using MovieApi.Interfaces;
-using MovieApi.Model;
 using MovieApi.Repository;
 using MovieApi.Service;
 
@@ -21,6 +21,8 @@ builder.Services.AddControllersWithViews().AddNewtonsoftJson(options =>
     );
 
 builder.Services.AddTransient<Seed>();
+
+builder.Services.AddScoped<IApiKeyValidator, ApiKeyValidator>();
 
 builder.Services.AddScoped<IActorRepository, ActorRepository>();
 builder.Services.AddScoped<IActorService, ActorService>();
