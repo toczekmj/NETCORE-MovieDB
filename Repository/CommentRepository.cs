@@ -33,4 +33,12 @@ public class CommentRepository : ICommentRepository
     {
         return await _context.Comments.SingleOrDefaultAsync(c => c.CommentId == id);
     }
+
+    public async Task<EntityState?> RemoveCommentAsync(Guid id)
+    {
+        var comment = await RetrieveOrDefault(id);
+        var result = _context.Comments.Remove(comment!);
+        await _context.SaveChangesAsync();
+        return result.State;
+    }
 }

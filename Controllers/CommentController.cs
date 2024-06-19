@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MovieApi.Interfaces.Services;
 using MovieApi.Model.DTOs;
 
@@ -50,5 +51,19 @@ public class CommentController : ControllerBase
             return BadRequest();
         var newComment = await _commentService.CreateCommentAsync(commentDto);
         return Ok(newComment);
+    }
+
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(EntityState))]
+    public async Task<ActionResult<EntityState>> DeleteCommentAsync(Guid id)
+    {
+        if(!ModelState.IsValid)
+            return BadRequest();
+        var removed = await _commentService.DeleteCommentAsync(id);
+        if (removed is null)
+            return NotFound();
+        return Ok(removed);
     }
 }

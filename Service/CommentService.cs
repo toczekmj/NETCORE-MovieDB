@@ -1,4 +1,5 @@
-﻿using MovieApi.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using MovieApi.Interfaces;
 using MovieApi.Interfaces.Services;
 using MovieApi.Mappers;
 using MovieApi.Model;
@@ -36,5 +37,10 @@ public class CommentService : ICommentService
     {
         var comment = await _commentRepository.RetrieveOrDefault(id);
         return comment?.ToCommentDto();
+    }
+
+    public async Task<EntityState?> DeleteCommentAsync(Guid id)
+    {
+        return await _commentRepository.RemoveCommentAsync(id);
     }
 }

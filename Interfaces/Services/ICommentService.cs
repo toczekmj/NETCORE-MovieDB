@@ -1,4 +1,5 @@
-﻿using MovieApi.Model.DTOs;
+﻿using Microsoft.EntityFrameworkCore;
+using MovieApi.Model.DTOs;
 
 namespace MovieApi.Interfaces.Services;
 
@@ -7,4 +8,5 @@ public interface ICommentService
     public Task<IEnumerable<CommentDto?>?> GetCommentsAsync();
     public Task<CommentDto?> CreateCommentAsync(CreateCommentDto comment);
     public Task<CommentDto?> GetCommentByIdAsync(Guid id);
+    public Task<EntityState?> DeleteCommentAsync(Guid id);
 }
