@@ -5,6 +5,7 @@ using MovieApi;
 using MovieApi.Data;
 using MovieApi.Filters.Helpers;
 using MovieApi.Interfaces;
+using MovieApi.Interfaces.Services;
 using MovieApi.Repository;
 using MovieApi.Service;
 
@@ -34,6 +35,8 @@ builder.Services.AddScoped<IRatingRepository, RatingRepository>();
 builder.Services.AddScoped<IRatingService, RatingService>();
 var connectionstring = builder.Configuration.GetConnectionString("DefaultConnection");
 
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<ICommentService, CommentService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
