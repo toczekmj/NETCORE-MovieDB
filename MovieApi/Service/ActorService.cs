@@ -43,17 +43,6 @@ public class ActorService : IActorService
 
         var created = await _actorRepository.CreateAsync(actor);
         return created.ToActorDto();
-        
-        // var existing = await _actorRepository.RetrieveOrDefault(actor);
-        // if(existing is null)
-        //     return await _actorRepository.Create(actor);
-        //
-        // existing.firstName = actorDto.firstName;
-        // existing.lastName = actorDto.lastName;
-        // existing.Movies = actorDto.Movies;
-        // await _actorRepository.Update(existing);
-        //
-        // return await _actorRepository.RetrieveOrDefault(actorDto);
     }
     
     public async Task<EntityState> DeleteActorAsync(Guid id)
