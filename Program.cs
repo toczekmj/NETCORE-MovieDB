@@ -37,7 +37,7 @@ var connectionstring = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseSqlServer(connectionstring);
+    options.UseNpgsql(connectionstring);
     options.EnableSensitiveDataLogging();
 });
 
