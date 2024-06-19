@@ -68,7 +68,7 @@ public class ActorController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(ActorDto))]
     public async Task<ActionResult<ActorDto>> UpdateActorAsync(Guid id, [FromBody] UpdateActorDto actor)
     {
-        if (!ModelState.IsValid || actor is null)
+        if (!ModelState.IsValid)
             return BadRequest();
         
         var result = await _actorService.UpdateActorAsync(id, actor);
